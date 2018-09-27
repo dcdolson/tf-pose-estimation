@@ -2,7 +2,7 @@
 
 extract_download_url() {
 
-        url=$( wget -q -O - $1 |  grep -o 'http*://download[^"]*' | tail -n 1 )
+        url=$( wget -q -O - $1 |  grep -o 'http*://download[^"'\'']*' | tail -n 1 )
         echo "$url"
 
 }
