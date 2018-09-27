@@ -56,6 +56,9 @@ if __name__ == '__main__':
 
     image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
 
+    if args.write_image is not None:
+        cv2.imwrite( args.write_image, image )
+
     import matplotlib.pyplot as plt
 
     fig = plt.figure()
