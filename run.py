@@ -21,6 +21,7 @@ logger.addHandler(ch)
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='tf-pose-estimation run')
     parser.add_argument('--image', type=str, default='./images/p1.jpg')
+    parser.add_argument('--write_image', type=str, default=None)
     parser.add_argument('--model', type=str, default='cmu', help='cmu / mobilenet_thin')
 
     parser.add_argument('--resize', type=str, default='0x0',
@@ -48,6 +49,9 @@ if __name__ == '__main__':
     logger.info('inference image: %s in %.4f seconds.' % (args.image, elapsed))
 
     image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
+
+    if args.write_image is not None:
+        cv2.imwrite( args.write_image, image )
 
     import matplotlib.pyplot as plt
 
