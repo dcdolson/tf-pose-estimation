@@ -300,18 +300,29 @@ class PoseEstimator:
 class TfPoseEstimator:
     # TODO : multi-scale
 
-    def __init__(self, graph_path, target_size=(320, 240), tf_config=None):
+    def __init__(self, graph_path=None, meta_graph_path=None, target_size=(320, 240), tf_config=None):
         self.target_size = target_size
 
-        # load graph
-        logger.info('loading graph from %s(default size=%dx%d)' % (graph_path, target_size[0], target_size[1]))
-        with tf.gfile.GFile(graph_path, 'rb') as f:
-            graph_def = tf.GraphDef()
-            graph_def.ParseFromString(f.read())
+        if graph_path:
+            # load graph
+            logger.info('loading graph from %s(default size=%dx%d)' % (graph_path, target_size[0], target_size[1]))
+            with tf.gfile.GFile(graph_path, 'rb') as f:
+                graph_def = tf.GraphDef()
+                graph_def.ParseFromString(f.read())
 
-        self.graph = tf.get_default_graph()
-        tf.import_graph_def(graph_def, name='TfPoseEstimator')
-        self.persistent_sess = tf.Session(graph=self.graph, config=tf_config)
+            self.graph = tf.get_default_graph()
+            tf.import_graph_def(graph_def, name='TfPoseEstimator')
+            self.persistent_sess = tf.Session(graph=self.graph, config=tf_config)
+
+        elif meta_graph_path:
+            logger.info("Loading metagraph from %s", meta_graph_path)
+            self.persistent_sess = tf.Session(config=tf_config)
+            new_saver = tf.train.import_meta_graph(meta_graph_path)
+            new_saver.restore(self.persistent_sess, os.path.dirname(meta_graph_path))
+
+        else:
+            raise ValueError("Provide either graph_path or meta_graph_path")
+
 
         # for op in self.graph.get_operations():
         #     print(op.name)

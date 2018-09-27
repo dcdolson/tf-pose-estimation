@@ -21,6 +21,8 @@ logger.addHandler(ch)
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='tf-pose-estimation run')
     parser.add_argument('--image', type=str, default='./images/p1.jpg')
+    parser.add_argument('--write_image', type=str, default=None)
+    parser.add_argument('--model_graph', type=str, default=None, help='location of saved graph')
     parser.add_argument('--model', type=str, default='cmu', help='cmu / mobilenet_thin')
 
     parser.add_argument('--resize', type=str, default='0x0',
@@ -32,9 +34,14 @@ if __name__ == '__main__':
 
     w, h = model_wh(args.resize)
     if w == 0 or h == 0:
-        e = TfPoseEstimator(get_graph_path(args.model), target_size=(432, 368))
+        w, h = (432, 368)
+
+    if args.model_graph:
+        # loading with variables and checkpoint
+        e = TfPoseEstimator(meta_graph_path=args.model_graph, target_size=(w, h))
     else:
-        e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
+        # loading frozen model
+        e = TfPoseEstimator(graph_path=get_graph_path(args.model), target_size=(w, h))
 
     # estimate human poses from a single image !
     image = common.read_imgfile(args.image, None, None)
