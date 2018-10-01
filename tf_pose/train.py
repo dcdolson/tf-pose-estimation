@@ -178,7 +178,7 @@ if __name__ == '__main__':
             # loader.restore(sess, tf.train.latest_checkpoint(args.checkpoint))
             saver.restore(sess, tf.train.latest_checkpoint(args.checkpoint))
             logger.info('Restore from checkpoint...Done')
-        elif pretrain_path:
+        elif pretrain_path and os.path.exists(pretrain_path):
             logger.info('Restore pretrained weights...')
             if '.ckpt' in pretrain_path:
                 loader = tf.train.Saver(net.restorable_variables())
